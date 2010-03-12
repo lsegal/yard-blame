@@ -7,7 +7,7 @@ class GitBlameHandler < YARD::Handlers::Ruby::MethodHandler
   
   @@blame_files = {}
   
-  def register(obj); @object = obj; super end
+  def register(obj) @object = obj; super end
   
   # @return [String] the revse of the string
   def process
@@ -22,4 +22,21 @@ class GitBlameHandler < YARD::Handlers::Ruby::MethodHandler
     end
     @object[:blame_info] = info
   end
+end
+
+module GitBlameHelper
+  def format_blame(obj)
+    format_lines(obj).split("\n").map do |l| 
+      if info = obj[:blame_info][l.to_i]
+        link_url("http://github.com/lsegal/yard/commits/#{info[:rev]}", info[:ref]) + 
+          " " + h(info[:name])
+      else
+        "---"
+      end
+    end.join("\n")
+  end
+end
+
+module YARD::Templates::Helpers::MethodHelper
+  include GitBlameHelper
 end
