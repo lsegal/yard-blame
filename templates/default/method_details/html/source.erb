@@ -1,0 +1,16 @@
+<table class="source_code">
+  <tr>
+    <td>
+      <pre class="rev"><%= "\n\n\n" %><%= h object[:blame_info].map {|l, v| v[:rev] }.join("\n") %></pre>
+    </td>
+    <td>
+      <pre class="name"><%= "\n\n\n" %><%= h object[:blame_info].map {|l, v| v[:name] }.join("\n") %></pre>
+    </td>
+    <td>
+      <pre class="lines"><%= "\n\n\n" %><%= h format_lines(object) %></pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File '<%= h object.file %>'<% if object.line %>, line <%= object.line %><% end %></span><%= "\n\n" %><%= html_syntax_highlight object.source, object.source_type %></pre>
+    </td>
+  </tr>
+</table>
