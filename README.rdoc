@@ -18,8 +18,8 @@ environment variables
 
 == Notes
 
-  - Github links don't yet work.
-  - Blame info is not always accurate
+- Github links don't yet work.
+- Blame info is not always accurate
 
 == License
 
