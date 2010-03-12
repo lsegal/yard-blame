@@ -15,7 +15,7 @@ class GitBlameHandler < YARD::Handlers::Ruby::MethodHandler
     info, bline = {}, statement.line_range.begin
     unless content = @@blame_files[statement.file]
       @@blame_files[statement.file] = 
-        `git blame #{statement.file}`.split("\n")
+        `git blame -l #{statement.file}`.split("\n")
     end
     bline.upto(statement.line_range.end) do |index|
       line = @@blame_files[statement.file][index-1]
@@ -32,7 +32,7 @@ module GitBlameHelper
     format_lines(obj).split("\n").map do |l| 
       next unless obj[:blame_info]
       if info = obj[:blame_info][l.to_i]
-        link_url("http://github.com/#{ENV['yard_user']}/#{ENV['yard_project']}/commit/#{info[:rev]}", sprintf("% 8s", info[:rev])) + 
+        link_url("http://github.com/#{ENV['YARD_USER']}/#{ENV['YARD_PROJECT']}/blame/#{info[:rev]}/#{obj.file}#L#{l}", sprintf("%.8s", info[:rev])) + 
           " " + h(info[:name])
       else
         ""
