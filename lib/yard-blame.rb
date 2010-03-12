@@ -14,8 +14,11 @@ class GitBlameHandler < YARD::Handlers::Ruby::MethodHandler
     super
     info = {}
     begin_line, end_line = statement.line_range.begin, statement.line_range.end
-    lines = `git blame -L #{begin_line},#{end_line} #{statement.file}`.split("\n")
-    lines.each.with_index do |line, index|
+    unless content = @@blame_files[statement.file]
+      @@blame_files[statement.file] = 
+        `git blame -L #{begin_line},#{end_line} #{statement.file}`.split("\n")
+    end
+    @@blame_files[statement.file].each.with_index do |line, index|
       if line =~ /^\^?(\S+)\s+\((.+?)\s+\d/
         info[statement.line_range.begin + index] = {rev: $1, name: $2}
       end
@@ -27,8 +30,9 @@ end
 module GitBlameHelper
   def format_blame(obj)
     format_lines(obj).split("\n").map do |l| 
+      next unless obj[:blame_info]
       if info = obj[:blame_info][l.to_i]
-        link_url("http://github.com/lsegal/yard/commit/#{info[:rev]}", sprintf("% 8s", info[:rev])) + 
+        link_url("http://github.com/#{ENV['yard_user']}/#{ENV['yard_project']}/commit/#{info[:rev]}", sprintf("% 8s", info[:rev])) + 
           " " + h(info[:name])
       else
         ""
