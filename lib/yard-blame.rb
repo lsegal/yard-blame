@@ -12,15 +12,15 @@ class GitBlameHandler < YARD::Handlers::Ruby::MethodHandler
   # @return [String] the revse of the string
   def process
     super
-    info = {}
-    begin_line, end_line = statement.line_range.begin, statement.line_range.end
+    info, bline = {}, statement.line_range.begin
     unless content = @@blame_files[statement.file]
       @@blame_files[statement.file] = 
-        `git blame -L #{begin_line},#{end_line} #{statement.file}`.split("\n")
+        `git blame #{statement.file}`.split("\n")
     end
-    @@blame_files[statement.file].each.with_index do |line, index|
-      if line =~ /^\^?(\S+)\s+\((.+?)\s+\d/
-        info[statement.line_range.begin + index] = {rev: $1, name: $2}
+    bline.upto(statement.line_range.end) do |index|
+      line = @@blame_files[statement.file][index-1]
+      if line =~ /^\^?(\S+)\s+\((.+?)\s+\d+/
+        info[index] = {rev: $1, name: $2}
       end
     end
     @object[:blame_info] = info

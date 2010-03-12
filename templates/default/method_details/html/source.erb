@@ -1,7 +1,11 @@
+<style>
+  .source_code td { vertical-align: top; }
+  .source_code .blame { margin-top: 13px; margin-right: 10px; color: #999; text-align: left; }
+</style>
 <table class="source_code">
   <tr>
     <td>
-      <pre class="lines blame" style="margin-right:10px;color:#999"><%= "\n\n\n" %><%= format_blame(object) %></pre>
+      <pre class="blame"><%= "\n\n\n" %><%= format_blame(object) %></pre>
     </td>
     <td>
       <pre class="lines"><%= "\n\n\n" %><%= h format_lines(object) %></pre>
