@@ -9,7 +9,6 @@ class GitBlameHandler < YARD::Handlers::Ruby::MethodHandler
   
   def register(obj) @object = obj; super end
   
-  # @return [String] the revse of the string
   def process
     super
     info, bline = {}, statement.line_range.begin
