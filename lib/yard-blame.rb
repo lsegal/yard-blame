@@ -4,18 +4,41 @@ module GitBlameHandler
 
   def process
     super
-    info, bline = {}, statement.line_range.begin
-    unless content = GitBlameHandler.blame_files[parser.file]
-      GitBlameHandler.blame_files[parser.file] = content =
-        `git blame -l #{parser.file}`.split("\n")
+    info, bline, eline = {}, statement.line_range.begin, statement.line_range.end
+
+    if GitBlameHandler.blame_files[parser.file]
+      set_blame_info(bline, eline)
+      return
     end
-    bline.upto(statement.line_range.end) do |index|
-      line = content[index-1]
-      if line =~ /^\^?(\S+)\s+\((.+?)\s+\d+/
-        info[index] = {:rev => $1, :name => $2}
+
+    content = `git blame -p -l #{parser.file}`
+    authors_cache = {}
+    content.scan(/^([0-9a-f]{40}) (\d+) (\d+) (\d+)$(?:\nauthor (.+))?$/).each do |match|
+      rev        = match[0]
+      start_line = match[2].to_i
+      num_lines  = match[3].to_i
+      author     = match[4]
+
+      if author
+        authors_cache[rev] = author
+      else
+        author = authors_cache[rev]
+      end
+
+      num_lines.times do |i|
+        info[start_line + i] = {:rev => rev, :name => author}
       end
     end
-    @object[:blame_info] = info
+
+    GitBlameHandler.blame_files[parser.file] = info
+    set_blame_info(bline, eline)
+  end
+
+  private
+  def set_blame_info(bline, eline)
+    all_revs = GitBlameHandler.blame_files[parser.file]
+    revs = all_revs.reject {|key, value| !(bline..eline).include?(key)} #reject to work with ruby 1.8
+    @object[:blame_info] = revs
   end
 end
 
