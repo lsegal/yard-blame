@@ -30,8 +30,7 @@ module GitBlameHandler
       end
     end
 
-    GitBlameHandler.blame_files[parser.file] = info
-    @object[:blame_info] = GitBlameHandler.blame_files[parser.file]
+    @object[:blame_info] = GitBlameHandler.blame_files[parser.file] = info
   end
 end
 
