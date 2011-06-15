@@ -7,7 +7,7 @@ module GitBlameHandler
     info, bline, eline = {}, statement.line_range.begin, statement.line_range.end
 
     if GitBlameHandler.blame_files[parser.file]
-      set_blame_info(bline, eline)
+      @object[:blame_info] = GitBlameHandler.blame_files[parser.file]
       return
     end
 
@@ -31,14 +31,7 @@ module GitBlameHandler
     end
 
     GitBlameHandler.blame_files[parser.file] = info
-    set_blame_info(bline, eline)
-  end
-
-  private
-  def set_blame_info(bline, eline)
-    all_revs = GitBlameHandler.blame_files[parser.file]
-    revs = all_revs.reject {|key, value| !(bline..eline).include?(key)} #reject to work with ruby 1.8
-    @object[:blame_info] = revs
+    @object[:blame_info] = GitBlameHandler.blame_files[parser.file]
   end
 end
 
