@@ -1,7 +1,7 @@
 module GitBlameHandler
   def self.blame_files; @@blame_files ||= {} end
   def register(obj) @object = obj; super end
-  
+
   def process
     super
     info, bline = {}, statement.line_range.begin
@@ -21,10 +21,10 @@ end
 
 module GitBlameHelper
   def format_blame(obj)
-    format_lines(obj).split("\n").map do |l| 
+    format_lines(obj).split("\n").map do |l|
       next unless obj[:blame_info]
       if info = obj[:blame_info][l.to_i]
-        link_url("http://github.com/#{ENV['YARD_USER']}/#{ENV['YARD_PROJECT']}/blame/#{info[:rev]}/#{obj.file}#L#{l}", sprintf("%.8s", info[:rev])) + 
+        link_url("http://github.com/#{ENV['YARD_USER']}/#{ENV['YARD_PROJECT']}/blame/#{info[:rev]}/#{obj.file}#L#{l}", sprintf("%.8s", info[:rev])) +
           " " + h(info[:name])
       else
         ""
